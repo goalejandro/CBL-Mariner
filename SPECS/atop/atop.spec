@@ -2,7 +2,7 @@
 Summary:        An advanced interactive monitor to view the load on system and process level
 Name:           atop
 Version:        2.6.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -21,7 +21,6 @@ BuildRequires:  zlib-devel
 Requires(post): systemd
 Requires(postun): systemd
 Requires(preun): systemd
-%if 0%{?rhel} >= 8 || 0%{?fedora}
 Requires:       python3-py3nvml
 %endif
 
@@ -68,36 +67,24 @@ install -Dp -m 0644 atop.service %{buildroot}%{_unitdir}/atop.service
 install -d %{buildroot}%{_localstatedir}/log/atop
 install -Dp -m 0755 atopacctd %{buildroot}%{_sbindir}/atopacctd
 install -Dp -m 0644 atopacct.service %{buildroot}%{_unitdir}/atopacct.service
-%if 0%{?rhel} >= 8 || 0%{?fedora}
 install -Dp -m 0755 atopgpud %{buildroot}%{_sbindir}/atopgpud
 install -Dp -m 0644 atopgpu.service %{buildroot}%{_unitdir}/atopgpu.service
-%endif
 install -Dp -m 0644 atop-rotate.* %{buildroot}%{_unitdir}/
 
 %post
 %systemd_post atop.service atopacct.service atop-rotate.timer
-%if 0%{?rhel} >= 8 || 0%{?fedora}
 %systemd_post atopgpu.service
-%endif
 
 %preun
 %systemd_preun atop.service atopacct.service atop-rotate.timer
-%if 0%{?rhel} >= 8 || 0%{?fedora}
 %systemd_preun atopgpu.service
-%endif
 
 %postun
 %systemd_postun_with_restart atop.service atopacct.service atop-rotate.timer
-%if 0%{?rhel} >= 8 || 0%{?fedora}
 %systemd_postun_with_restart atopgpu.service
-%endif
 
 %files
-%if 0%{?rhel}
 %license COPYING
-%else
-%license COPYING
-%endif
 %doc AUTHOR README*
 %config(noreplace) %{_sysconfdir}/sysconfig/atop
 %{_bindir}/atopsar
@@ -111,11 +98,12 @@ install -Dp -m 0644 atop-rotate.* %{buildroot}%{_unitdir}/
 %{_unitdir}/atop*.timer
 %{_datadir}/atop/atop.daily
 %{_sbindir}/atopacctd
-%if 0%{?rhel} >= 8 || 0%{?fedora}
 %{_sbindir}/atopgpud
-%endif
 
 %changelog
+* Mon Mar 27 2023 Betty Lakes <bettylakes@microsoft.com> - 2.6.0-8
+- Remove distro-specific macros
+
 * Fri Sep 24 2021 Muhammad Falak <mwani@microsoft.com> - 2.6.0-7
 - Initial CBL-Mariner import from Fedora 34 (license: MIT).
 
